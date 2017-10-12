@@ -32,7 +32,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function tableName()
     {
-        return '{{%user}}';
+        return '{{%dz_user}}';
     }
 
     /**
@@ -64,12 +64,47 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
     }
 
-    /**
-     * @inheritdoc
-     */
+//    /**
+//     * @inheritdoc
+//     */
+//    public static function findIdentityByAccessToken($token, $type = null)
+//    {
+//        return static::findOne(['access_token' => $token]);
+//      //  throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+//    }
+
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        // 如果token无效的话，
+        if(!static::apiTokenIsValid($token)) {
+            throw new \yii\web\UnauthorizedHttpException("token is invalid.");
+        }
+
+        return static::findOne(['access_token' => $token, 'status' => self::STATUS_ACTIVE]);
+        // throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+    }
+
+
+    /**
+     * 生成 api_token
+     */
+    public function generateApiToken()
+    {
+        $this->access_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
+
+    /**
+     * 校验api_token是否有效
+     */
+    public static function apiTokenIsValid($token)
+    {
+        if (empty($token)) {
+            return false;
+        }
+
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $expire = Yii::$app->params['user.apiTokenExpire'];
+        return $timestamp + $expire >= time();
     }
 
     /**
@@ -100,6 +135,8 @@ class User extends ActiveRecord implements IdentityInterface
             'status' => self::STATUS_ACTIVE,
         ]);
     }
+
+
 
     /**
      * Finds out if password reset token is valid

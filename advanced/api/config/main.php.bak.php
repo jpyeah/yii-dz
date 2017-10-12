@@ -3,9 +3,7 @@ $params = array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
     require(__DIR__ . '/params.php'),
-    require(__DIR__ . '/params-local.php'),
-    require(__DIR__ . '/../../common/config/wechat.php')
-
+    require(__DIR__ . '/params-local.php')
 );
 
 return [
@@ -18,7 +16,6 @@ return [
             'class' => 'api\modules\v1\Module',
         ],
     ],
-
     'components' => [
         'request' => [
             //'csrfParam' => '_csrf-api',
@@ -26,23 +23,10 @@ return [
                 'application/json' => 'yii\web\JsonParser',
             ]
         ],
-        'response' => [
-            'class' => 'yii\web\Response',
-            'on beforeSend' => function ($event) {
-                $response = $event->sender;
-                $response->data = [
-                    'code' => $response->getStatusCode(),
-                    'data' => $response->data,
-                    'message' => $response->statusText
-                ];
-                $response->format = yii\web\Response::FORMAT_JSON;
-            },
-        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
-            'enableSession' => false,
-           // 'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
@@ -66,21 +50,8 @@ return [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'controller' =>['v1/user'],
-                    'pluralize' => false,
-                    'extraPatterns' => [
-                        'POST login' => 'login',
-                        'GET signup-test' => 'signup-test',
-                        'GET user-profile' => 'user-profile',
-                    ]
-                    ],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
             ],
-        ],
-
-        'wechat' => [
-            'class' => 'maxwen\easywechat\Wechat',
         ],
 
     ],

@@ -3,12 +3,15 @@
 namespace api\modules\v1\controllers;
 
 use yii\web\Controller;
+use yii\rest\ActiveController;
 
 /**
  * Default controller for the `v1` module
  */
-class DefaultController extends Controller
+class DefaultController extends ActiveController
 {
+    public $modelClass = 'api\models\User';
+
     /**
      * Renders the index view for the module
      * @return string

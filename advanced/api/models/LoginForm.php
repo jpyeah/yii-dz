@@ -1,8 +1,9 @@
 <?php
-namespace common\models;
+namespace api\models;
 
 use Yii;
 use yii\base\Model;
+use common\models\User;
 
 /**
  * Login form
@@ -11,7 +12,6 @@ class LoginForm extends Model
 {
     public $username;
     public $password;
-    public $rememberMe = true;
 
     private $_user;
 
@@ -22,54 +22,59 @@ class LoginForm extends Model
         parent::init();
         $this->on(self::GET_API_TOKEN, [$this, 'onGenerateApiToken']);
     }
+
+
     /**
      * @inheritdoc
+     * 对客户端表单数据进行验证的rule
      */
     public function rules()
     {
         return [
-            // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
-            ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
             ['password', 'validatePassword'],
         ];
     }
 
     /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
-     *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
+     * 自定义的密码认证方法
      */
     public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
-            $user = $this->getUser();
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+            $this->_user = $this->getUser();
+            if (!$this->_user || !$this->_user->validatePassword($this->password)) {
+                $this->addError($attribute, '用户名或密码错误.');
             }
         }
     }
-
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'username' => '用户名',
+            'password' => '密码',
+        ];
+    }
     /**
      * Logs in a user using the provided username and password.
      *
-     * @return bool whether the user is logged in successfully
+     * @return boolean whether the user is logged in successfully
      */
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            $this->trigger(self::GET_API_TOKEN);
+            return $this->_user;
         } else {
-            return false;
+            return null;
         }
     }
 
     /**
-     * Finds user by [[username]]
+     * 根据用户名获取用户的认证信息
      *
      * @return User|null
      */
@@ -88,7 +93,7 @@ class LoginForm extends Model
      */
     public function onGenerateApiToken ()
     {
-        if (!User::apiTokenIsValid($this->_user->api_token)) {
+        if (!User::apiTokenIsValid($this->_user->access_token)) {
             $this->_user->generateApiToken();
             $this->_user->save(false);
         }
