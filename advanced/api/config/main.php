@@ -26,18 +26,18 @@ return [
                 'application/json' => 'yii\web\JsonParser',
             ]
         ],
-        'response' => [
-            'class' => 'yii\web\Response',
-            'on beforeSend' => function ($event) {
-                $response = $event->sender;
-                $response->data = [
-                    'code' => $response->getStatusCode(),
-                    'data' => $response->data,
-                    'message' => $response->statusText
-                ];
-                $response->format = yii\web\Response::FORMAT_JSON;
-            },
-        ],
+//        'response' => [
+//            'class' => 'yii\web\Response',
+//            'on beforeSend' => function ($event) {
+//                $response = $event->sender;
+//                $response->data = [
+//                    'code' => $response->getStatusCode(),
+//                    'data' => $response->data,
+//                    'message' => $response->statusText
+//                ];
+//                $response->format = yii\web\Response::FORMAT_JSON;
+//            },
+//        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
@@ -69,13 +69,24 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' =>['v1/user'],
-                    'pluralize' => false,
+                   'pluralize' => false,
                     'extraPatterns' => [
                         'POST login' => 'login',
                         'GET signup-test' => 'signup-test',
                         'GET user-profile' => 'user-profile',
                     ]
-                    ],
+
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' =>['v1/wechat',],
+                     'pluralize' => false,
+                    'extraPatterns' => [
+                        'GET wechat' => 'wx-oauth',
+                        'POST wechat' => 'wx-oauth',
+                    ]
+
+                ],
             ],
         ],
 

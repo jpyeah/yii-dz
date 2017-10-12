@@ -4,7 +4,7 @@ namespace api\modules\v1\controllers;
 
 use \yii\rest\Controller;
 use EasyWeChat\Foundation\Application;
-
+use Yii;
 class WechatController extends Controller
 {
 
@@ -12,7 +12,7 @@ class WechatController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+       print_r('dsfas');
     }
 
     public function actionWxOauth(){
