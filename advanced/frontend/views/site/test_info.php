@@ -33,7 +33,7 @@ AppAsset::register($this);
             <div class="mycenter">
                 <div class="mysign"style="margin-top:20%">
                     <div class="col-lg-11 text-center text-info">
-                        <h2>请填写信息</h2>
+                        <h2>点孵测评</h2>
                     </div>
                     <div class="col-lg-8">
                         <input type="text" class="form-control" id="mobile" name="mobile" placeholder="请输入手机号码" required autofocus/>
