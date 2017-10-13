@@ -42,7 +42,9 @@ class WechatController extends Controller
         $data['wx_open_id']=$users->getId();
         $data['username']=$users->getNickname();
         $data['avatar']=$users->getAvatar();
-        return $data;
+
+        $this->createUser($data);
+        //return $data;
     }
 
     public function createUser($data){
