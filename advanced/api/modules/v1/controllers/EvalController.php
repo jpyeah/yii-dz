@@ -55,7 +55,7 @@ class EvalController extends \yii\rest\Controller
                     $test_user->save(false);
                     $finishurl = 'http://dzapi.bibicars.com/v1/eval';
                     $closeurl = 'http://dzapi.bibicars.com/v1/eval';
-                    
+
                     $url = $this->createurl($res->data->code,$finishurl,$closeurl);
 
                     return $this->redirect($url)->send();
