@@ -39,7 +39,7 @@ class EvalController extends \yii\rest\Controller
 
 
         $finishurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauth';
-        $closeurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauthl';
+        $closeurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauth';
 
         if($test_user){
 
@@ -91,7 +91,7 @@ class EvalController extends \yii\rest\Controller
         $test_user = UserTest::findOne(['user_id'=>$user->id]);
 
         $finishurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauth';
-        $closeurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauthl';
+        $closeurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauth';
 
         if($test_user){
 
