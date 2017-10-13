@@ -124,7 +124,7 @@ class EvalController extends \yii\rest\Controller
                 $UserTestM->user_id = $user->id;
                 $UserTestM->test_mobile = $mobile;
                 $UserTestM->save(false);
-                $result = $this->createusercode($test_user->test_user_id);
+                $result = $this->createusercode($res->data->userid);
                 if($result->success){
 
                     $test_user->test_code=$result->data->code;
