@@ -37,12 +37,13 @@ class EvalController extends \yii\rest\Controller
 
         $test_user = UserTest::findOne(['user_id'=>$user->id]);
 
+
+        $finishurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauth';
+        $closeurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauthl';
+
         if($test_user){
 
             if($test_user->test_code){
-
-                $finishurl = 'http://dzapi.bibicars.com/v1/eval';
-                $closeurl = 'http://dzapi.bibicars.com/v1/eval';
 
                 $url = $this->createurl($test_user->test_code,$finishurl,$closeurl);
 
@@ -53,8 +54,6 @@ class EvalController extends \yii\rest\Controller
                 if($res->success){
                     $test_user->test_code=$res->data->code;
                     $test_user->save(false);
-                    $finishurl = 'http://dzapi.bibicars.com/v1/eval';
-                    $closeurl = 'http://dzapi.bibicars.com/v1/eval';
 
                     $url = $this->createurl($res->data->code,$finishurl,$closeurl);
 
@@ -91,8 +90,8 @@ class EvalController extends \yii\rest\Controller
 
         $test_user = UserTest::findOne(['user_id'=>$user->id]);
 
-        $finishurl = 'http://dzapi.bibicars.com/v1/eval';
-        $closeurl = 'http://dzapi.bibicars.com/v1/eval';
+        $finishurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauth';
+        $closeurl = 'http://dzapi.bibicars.com/v1/wechat/wx-oauthl';
 
         if($test_user){
 
