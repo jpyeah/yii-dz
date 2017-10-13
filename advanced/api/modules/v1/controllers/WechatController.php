@@ -50,13 +50,16 @@ class WechatController extends Controller
     public function createUser($data){
 
         $user=User::findOneByWxopenid($data['wx_open_id']);
-
+        
         if($user){
             $Wxloginmodel =  new WxLoginForm();
             $Wxloginmodel->wx_open_id=$data['wx_open_id'];
             if ($user = $Wxloginmodel->login()) {
                 if ($user instanceof IdentityInterface) {
-                    return $user->access_token;
+
+                    return $this->redirect('http://api.dz.com/v1/eval?token='.$user->access_token)->send();
+
+                    //  return $user->access_token;
                 } else {
                     return $user->errors;
                 }
@@ -78,7 +81,9 @@ class WechatController extends Controller
                 $Wxloginmodel->wx_open_id=$user->wx_open_id;
                 if ($user = $Wxloginmodel->login()) {
                     if ($user instanceof IdentityInterface) {
-                        return $user->access_token;
+                        return $this->redirect('http://api.dz.com/v1/eval?token='.$user->access_token)->send();
+
+                        // return $user->access_token;
                     } else {
                         return $user->errors;
                     }
@@ -131,7 +136,7 @@ class WechatController extends Controller
                 $Wxloginmodel->wx_open_id=$user->wx_open_id;
                 if ($user = $Wxloginmodel->login()) {
                     if ($user instanceof IdentityInterface) {
-                        return $this->redirect(['eval?token='.$user->access_token])->send();
+                        return $this->redirect('http://api.dz.com/v1/eval?token='.$user->access_token)->send();
 
                        // return $user->access_token;
                     } else {
