@@ -5,6 +5,13 @@ namespace api\modules\v1\controllers;
 use \yii\rest\Controller;
 use EasyWeChat\Foundation\Application;
 use Yii;
+use common\models\User;
+use api\models\WxsignupForm;
+use api\models\WxLoginForm;
+use yii\db\Exception as DbException;
+use yii\web\IdentityInterface;
+
+
 class WechatController extends Controller
 {
 
@@ -14,11 +21,15 @@ class WechatController extends Controller
     {
        print_r('dsfas');
     }
+    //微信授权
+    public function actionWxToken(){
+         $wechat = Yii::$app->wechat;
+        $response = $wechat->server->serve();
+        return $response->send();
+
+    }
 
     public function actionWxOauth(){
-//        $wechat = Yii::$app->wechat;
-//        $response = $wechat->server->serve();
-//        return $response->send();
         $wechat=Yii::$app->wechat;
         $wechat->config->set('oauth.callback','/v1/wechat/wx-oauth-callback');
         $response=$wechat->oauth->redirect();
@@ -26,7 +37,6 @@ class WechatController extends Controller
     }
 
     public function actionWxOauthCallback(){
-
         $users =Yii::$app->wechat->oauth->user();
         $openId=$users->getId();
         $data['wx_open_id']=$users->getId();
@@ -35,75 +45,99 @@ class WechatController extends Controller
         return $data;
     }
 
-    /**
-     *
-     * 微信用户注册登录－直接授权注册
-     */
-    public function actionWxlogin(){
-
-        $users =Yii::$app->wechat->oauth->user();
-
-        $reload_page = Yii::$app->request->get('reload_page', '/my');
-
-        if(!Yii::$app->user->isGuest){
-            return $this->redirect('/');
-            //return $this->jsonSuccess('已经登录');
-        }
-        $openId=$users->getId();
-
-        $data['wx_open_id']=$users->getId();
-        $data['username']=$users->getNickname();
-        $data['avatar']=$users->getAvatar();
-
-        $session = Yii::$app->session;
-        $session->set('wx_open_id',$users->getId());
-        $session->set('username',$users->getNickname());
-        $session->set('avatar',$users->getAvatar());
+    public function createUser($data){
 
         $user=User::findOneByWxopenid($data['wx_open_id']);
 
         if($user){
-            $loginmodel = new WxloginForm();
-            if ($loginmodel->load($data, '') && $loginmodel->login()) {
-                //合并购物车
-                $user_id = Yii::$app->user->id;
-                $app_cart_cookie_id = CookieUtil::getAppCartCookieId();
-                if($app_cart_cookie_id){
-                    Cart::combineCart($user_id, $app_cart_cookie_id);
-                    //重新生成app_cart_cookie_id
-                    $app_cart_cookie_id = Cart::genAppCartCookieId();
-                    CookieUtil::setAppCartCookieId($app_cart_cookie_id);
+            $Wxloginmodel =  new WxloginForm();
+            $Wxloginmodel->wx_open_id=$data['wx_open_id'];
+            if ($user = $Wxloginmodel->login()) {
+                if ($user instanceof IdentityInterface) {
+                    return $user->access_token;
+                } else {
+                    return $user->errors;
                 }
-                return $this->redirect('/');
-                //return $this->jsonSuccess(['user_id'=>Yii::$app->getUser()->getId()], '登陆成功');
             } else {
-                return $this->jsonFail($loginmodel->getErrors(null), $loginmodel->errorsToOneString());
+                return $Wxloginmodel->errors;
             }
 
         }else{
 
-            $signupForm = new WxsignupForm();
-            if($signupForm->load($data, '') && $signupForm->signup()){
-                //自动登录
-                $loginForm = new WxloginForm();
-                $loginForm->wx_open_id = $data['wx_open_id'];
-                $loginForm->username = $data['username'];
-                $loginForm->avatar= $data['avatar'];
-                $loginForm->login();
-
-                //合并购物车
-                $user_id = Yii::$app->user->id;
-                $app_cart_cookie_id = CookieUtil::getAppCartCookieId();
-                if($app_cart_cookie_id){
-                    Cart::combineCart($user_id, $app_cart_cookie_id);
-                    //重新生成app_cart_cookie_id
-                    $app_cart_cookie_id = Cart::genAppCartCookieId();
-                    CookieUtil::setAppCartCookieId($app_cart_cookie_id);
+            $user = new User();
+            $user->generateAuthKey();
+            // $user->setPassword('123456');
+            $user->username = 'jpjy123456';
+            $user->avatar =  $data['avatar'];
+            $user->wx_open_id = $data['wx_open_id'];
+            $user->save(false);
+            if($user){
+                $Wxloginmodel =  new WxloginForm();
+                $Wxloginmodel->wx_open_id=$user->wx_open_id;
+                if ($user = $Wxloginmodel->login()) {
+                    if ($user instanceof IdentityInterface) {
+                        return $user->access_token;
+                    } else {
+                        return $user->errors;
+                    }
+                } else {
+                    return $Wxloginmodel->errors;
                 }
-                return  $this->redirect('/');
-                //return $this->jsonSuccess(['user_id'=>Yii::$app->getUser()->getId()], '注册成功');
+            }
+
+        }
+
+    }
+
+    public function actionView($id){
+
+        $data =array();
+
+        $data['wx_open_id'] = Yii::$app->request->get('wx_open_id');
+        $data['avatar']='http://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTK7qUTfB8fLaibwqELSMbwXrCdopLjCmsN7nWSQHPzWSLkrsmLBvj8HHhPibc6HK0LekzdbWROdleJg/0';
+        $data['username']='jpjy1';
+
+        $user=User::findOneByWxopenid($data['wx_open_id']);
+
+        if($user){
+            $Wxloginmodel =  new WxloginForm();
+            $Wxloginmodel->wx_open_id=$data['wx_open_id'];
+            if ($user = $Wxloginmodel->login()) {
+                if ($user instanceof IdentityInterface) {
+
+                    return $this->redirect('http://api.dz.com/v1/eval?token='.$user->access_token)->send();
+
+                  //  return $user->access_token;
+                } else {
+                    return $user->errors;
+                }
             } else {
-                return $this->jsonFail($signupForm->getErrors(null), $signupForm->errorsToOneString());
+                return $Wxloginmodel->errors;
+            }
+
+        }else{
+
+            $user = new User();
+            $user->generateAuthKey();
+           // $user->setPassword('123456');
+            $user->username = 'jpjy123456';
+            $user->avatar =  $data['avatar'];
+            $user->wx_open_id = $data['wx_open_id'];
+            $user->save(false);
+            if($user){
+                $Wxloginmodel =  new WxloginForm();
+                $Wxloginmodel->wx_open_id=$user->wx_open_id;
+                if ($user = $Wxloginmodel->login()) {
+                    if ($user instanceof IdentityInterface) {
+                        return $this->redirect(['eval?token='.$user->access_token])->send();
+
+                       // return $user->access_token;
+                    } else {
+                        return $user->errors;
+                    }
+                } else {
+                    return $Wxloginmodel->errors;
+                }
             }
 
         }

@@ -24,7 +24,7 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
-    const STATUS_ACTIVE = 10;
+    const STATUS_ACTIVE = 1;
 
 
     /**
@@ -116,6 +116,37 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findByUsername($username)
     {
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    /**
+     * Finds user by mobile
+     *
+     * @param string $mobile
+     * @param int $status 如果为null, 则不过滤status
+     * @return self|null
+     */
+    public static function findOneByMobile($mobile, $status=1)
+    {
+        if($status === null)
+            return self::findOne(['mobile' => $mobile]);
+        else
+            return self::findOne(['mobile' => $mobile, 'status' => $status]);
+    }
+
+    /**
+     * Finds user by wx_open_id
+     *
+     * @param string $wx_open_id
+     * @param int $status 如果为null, 则不过滤status
+     * @return self|null
+     */
+    public static function findOneByWxopenid($wx_open_id, $status=1)
+    {
+        if($status === null) {
+            return self::findOne(['wx_open_id' => $wx_open_id]);
+        }else {
+            return self::findOne(['wx_open_id' => $wx_open_id, 'status' => $status]);
+        }
     }
 
     /**

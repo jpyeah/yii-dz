@@ -7,6 +7,7 @@
  * @email zhongjipiao@126.com
  * @license The MIT License (MIT)
  */
+
 namespace api\models;
 
 use Yii;
@@ -16,12 +17,13 @@ use common\models\User;
 /**
  * Login form
  */
-class LoginForm extends Model
+class WxLoginForm extends Model
 {
+    public $wx_open_id;
     public $username;
-    public $password;
+    public $avatar;
 
-    private $_user;
+    public $_user;
 
     const GET_API_TOKEN = 'generate_api_token';
 
@@ -34,37 +36,30 @@ class LoginForm extends Model
 
     /**
      * @inheritdoc
-     * 对客户端表单数据进行验证的rule
      */
     public function rules()
     {
         return [
-            [['username', 'password'], 'required'],
-            ['password', 'validatePassword'],
+            // username and password are both required
+            [['wx_open_id'], 'required'],
+            ['wx_open_id', 'validateWxopenid'],
+
+            // rememberMe must be a boolean value
+
         ];
     }
 
     /**
      * 自定义的密码认证方法
      */
-    public function validatePassword($attribute, $params)
+    public function validateWxopenid($attribute, $params)
     {
         if (!$this->hasErrors()) {
             $this->_user = $this->getUser();
-            if (!$this->_user || !$this->_user->validatePassword($this->password)) {
+            if (!$this->_user) {
                 $this->addError($attribute, '用户名或密码错误.');
             }
         }
-    }
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return [
-            'username' => '用户名',
-            'password' => '密码',
-        ];
     }
     /**
      * Logs in a user using the provided username and password.
@@ -82,16 +77,17 @@ class LoginForm extends Model
     }
 
     /**
-     * 根据用户名获取用户的认证信息
+     * Finds user by [[username]]
      *
      * @return User|null
      */
     protected function getUser()
     {
         if ($this->_user === null) {
-            $this->_user = User::findByUsername($this->username);
+          
+           $this->_user = User::findOneByWxopenid($this->wx_open_id);
+            
         }
-
         return $this->_user;
     }
 

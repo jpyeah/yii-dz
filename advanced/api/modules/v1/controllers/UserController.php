@@ -25,7 +25,7 @@ class UserController extends Controller
                 'tokenParam' => 'token',
                 'optional' => [
                     'login',
-                    'signup-test'
+                    'signup-test',
                 ],
             ]
         ] );
@@ -57,13 +57,13 @@ class UserController extends Controller
     /**
      * 添加测试用户
      */
-    public function actionSignupTest ()
+    public function actionSignupTest()
     {
         $user = new User();
         $user->generateAuthKey();
         $user->setPassword('123456');
-        $user->username = 'jpjy';
-        $user->email = '111@111.com';
+        $user->username = 'jpyeah';
+        $user->email = '1116@111.com';
         $user->save(false);
 
         return [
