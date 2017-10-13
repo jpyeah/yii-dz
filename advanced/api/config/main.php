@@ -95,6 +95,7 @@ return [
                     'extraPatterns' => [
                         'GET wx-oauth' => 'wx-oauth',
                         'POST wx-oauth' => 'wx-oauth',
+                        'GET wx-oauth-detail' => 'wx-oauth-detail',
                         'GET wx-oauth-callback' => 'wx-oauth-callback',
                         'POST wx-oauth-callback' => 'wx-oauth-callback',
                     ]
