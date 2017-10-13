@@ -16,13 +16,13 @@ class WechatController extends Controller
     }
 
     public function actionWxOauth(){
-        $wechat = Yii::$app->wechat;
-        $response = $wechat->server->serve();
-        return $response->send();
-//        $wechat=Yii::$app->wechat;
-//        $wechat->config->set('oauth.callback','/user/wxlogin');
-//        $response=$wechat->oauth->redirect();
+//        $wechat = Yii::$app->wechat;
+//        $response = $wechat->server->serve();
 //        return $response->send();
+        $wechat=Yii::$app->wechat;
+        $wechat->config->set('oauth.callback','/v1/wechat/wx-oauth-callback');
+        $response=$wechat->oauth->redirect();
+        return $response->send();
     }
 
     public function actionWxOauthCallback(){
@@ -32,6 +32,7 @@ class WechatController extends Controller
         $data['wx_open_id']=$users->getId();
         $data['username']=$users->getNickname();
         $data['avatar']=$users->getAvatar();
+        return $data;
     }
 
     /**

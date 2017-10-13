@@ -26,18 +26,18 @@ return [
                 'application/json' => 'yii\web\JsonParser',
             ]
         ],
-//        'response' => [
-//            'class' => 'yii\web\Response',
-//            'on beforeSend' => function ($event) {
-//                $response = $event->sender;
-//                $response->data = [
-//                    'code' => $response->getStatusCode(),
-//                    'data' => $response->data,
-//                    'message' => $response->statusText
-//                ];
-//                $response->format = yii\web\Response::FORMAT_JSON;
-//            },
-//        ],
+        'response' => [
+            'class' => 'yii\web\Response',
+            'on beforeSend' => function ($event) {
+                $response = $event->sender;
+                $response->data = [
+                    'code' => $response->getStatusCode(),
+                    'data' => $response->data,
+                    'message' => $response->statusText
+                ];
+                $response->format = yii\web\Response::FORMAT_JSON;
+            },
+        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
@@ -82,8 +82,10 @@ return [
                     'controller' =>['v1/wechat',],
                      'pluralize' => false,
                     'extraPatterns' => [
-                        'GET wechat' => 'wx-oauth',
-                        'POST wechat' => 'wx-oauth',
+                        'GET wx-oauth' => 'wx-oauth',
+                        'POST wx-oauth' => 'wx-oauth',
+                        'GET wx-oauth-callback' => 'wx-oauth-callback',
+                        'POST wx-oauth-callback' => 'wx-oauth-callback',
                     ]
 
                 ],
