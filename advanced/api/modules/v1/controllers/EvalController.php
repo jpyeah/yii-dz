@@ -61,7 +61,9 @@ class EvalController extends \yii\rest\Controller
 
         }else{
 
-            echo  $this->render('index');
+            $url = 'http://dzwep.bibicars.com/site/test-info?token='.$token;
+
+            return $this->redirect($url)->send();
 
         }
 
@@ -77,6 +79,8 @@ class EvalController extends \yii\rest\Controller
     public function actionView($id){
 
         $token = Yii::$app->request->get('token');
+        $mobile = Yii::$app->request->get('mobile');
+        $realname = Yii::$app->request->get('realname');
 
         $user = User::findIdentityByAccessToken($token);
 
@@ -110,8 +114,8 @@ class EvalController extends \yii\rest\Controller
             }
 
         }else{
-            $mobile = "13218029708";
-            $realname = "测试中环";
+//            $mobile = "13218029708";
+//            $realname = "测试中环";
             $res = $this->createuser($mobile,$realname);
             if($res->success){
                 $UserTestM = new UserTest();

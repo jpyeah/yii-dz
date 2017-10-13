@@ -132,10 +132,10 @@ class SiteController extends Controller
     }
 
     public function actionTestInfo(){
+        $token = Yii::$app->request->get('token');
 
        $this->layout=false;
-
-        return $this->render('test_info');
+        return $this->render('test_info',['token'=>$token]);
     }
     /**
      * Displays about page.

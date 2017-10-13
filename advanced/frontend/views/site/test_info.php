@@ -8,7 +8,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
-use common\widgets\Alert;
+use common\models\UserTest;
 
 AppAsset::register($this);
 ?>
@@ -36,11 +36,11 @@ AppAsset::register($this);
                         <h2>请填写信息</h2>
                     </div>
                     <div class="col-lg-8">
-                        <input type="text" class="form-control" name="username" placeholder="请输入手机号码" required autofocus/>
+                        <input type="text" class="form-control" id="mobile" name="mobile" placeholder="请输入手机号码" required autofocus/>
                     </div>
                     <div class="col-lg-10"></div>
                     <div class="col-lg-8" style="margin-top:20px;padding-bottom: 5px;">
-                        <input type="text" class="form-control" name="realname" placeholder="真实姓名" required autofocus/>
+                        <input type="text" class="form-control" name="realname" id="realname" placeholder="真实姓名" required autofocus/>
                     </div>
                     <div class="col-lg-10"></div>
 
@@ -53,10 +53,20 @@ AppAsset::register($this);
         </form>
     </div>
 </div>
+<input type="hidden" id="token" value="<?= $token?>">
 
+<?php $this->beginBlock('weixin') ?>
+$('#btn').click(function(){
 
+var token = $('#token').val();
+var mobile = $('#mobile').val();
+var realname= $('#realname').val();
+window.location="http://dzapi.bibicars.com/v1/eval/1?token="+token+"&mobile="+mobile+"&realname="+realname;
 
+});
 
+<?php $this->endBlock() ?>
+<?php $this->registerJs($this->blocks['weixin'], \yii\web\View::POS_END); ?>
 
 <?php $this->endBody() ?>
 </body>
