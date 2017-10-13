@@ -93,6 +93,8 @@ return [
                     'controller' =>['v1/wechat',],
                      'pluralize' => false,
                     'extraPatterns' => [
+                        'GET wechat' => 'wechat',
+                        'POST wechat' => 'wechat',
                         'GET wx-oauth' => 'wx-oauth',
                         'POST wx-oauth' => 'wx-oauth',
                         'GET wx-oauth-detail' => 'wx-oauth-detail',

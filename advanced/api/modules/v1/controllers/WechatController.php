@@ -10,6 +10,7 @@ use api\models\WxsignupForm;
 use api\models\WxLoginForm;
 use yii\db\Exception as DbException;
 use yii\web\IdentityInterface;
+use EasyWeChat\Message\Text;
 
 
 class WechatController extends Controller
@@ -20,6 +21,62 @@ class WechatController extends Controller
     public function actionIndex()
     {
        print_r('dsfas');
+    }
+
+    public function actionWechat(){
+
+        $server =Yii::$app->wechat->server;
+
+        $server->setMessageHandler(function($message){
+
+            switch ($message->MsgType) {
+                case 'event':
+                    switch ($message->Event) {
+                        case 'subscribe'://未关注过的扫码
+
+                                return new Text(['content' => "欢迎关注点孵教育科技，希望我们能与您携手-趁现在，遇见未来..."]);
+                            break;
+                        case 'SCAN'://已关注过的扫码
+
+                                return new Text(['content' => "欢迎关注点孵教育科技，希望我们能与您携手-趁现在，遇见未来..."]);
+
+                            break;
+                        default:
+                            return new Text(['content' => "欢迎关注点孵教育科技，希望我们能与您携手-趁现在，遇见未来..."]);
+                            break;
+                    }
+                    break;
+                case 'text':
+                    return new Text(['content' => "欢迎关注点孵教育科技，希望我们能与您携手-趁现在，遇见未来..."]);
+                    break;
+                case 'image':
+                    return "图片";
+                    break;
+                case 'voice':
+                    return "声音";
+                    break;
+                case 'video':
+                    # 视频消息...
+                    break;
+                case 'location':
+                    return "位置";
+                    break;
+                case 'link':
+                    # 链接消息...
+                    break;
+                // ... 其它消息
+                default:
+                    return new Text(['content' => "欢迎关注点孵教育科技，希望我们能与您携手-趁现在，遇见未来..."]);
+                    break;
+            }
+
+        });
+
+        $response = $server->serve();
+
+        return $response->send();
+
+
     }
     //微信授权
     public function actionWxToken(){
