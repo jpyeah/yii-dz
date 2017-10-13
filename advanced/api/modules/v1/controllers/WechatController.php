@@ -52,7 +52,7 @@ class WechatController extends Controller
         $user=User::findOneByWxopenid($data['wx_open_id']);
 
         if($user){
-            $Wxloginmodel =  new WxloginForm();
+            $Wxloginmodel =  new WxLoginForm();
             $Wxloginmodel->wx_open_id=$data['wx_open_id'];
             if ($user = $Wxloginmodel->login()) {
                 if ($user instanceof IdentityInterface) {
@@ -74,7 +74,7 @@ class WechatController extends Controller
             $user->wx_open_id = $data['wx_open_id'];
             $user->save(false);
             if($user){
-                $Wxloginmodel =  new WxloginForm();
+                $Wxloginmodel =  new WxLoginForm();
                 $Wxloginmodel->wx_open_id=$user->wx_open_id;
                 if ($user = $Wxloginmodel->login()) {
                     if ($user instanceof IdentityInterface) {
