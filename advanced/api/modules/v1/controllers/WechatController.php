@@ -50,7 +50,7 @@ class WechatController extends Controller
     public function createUser($data){
 
         $user=User::findOneByWxopenid($data['wx_open_id']);
-        
+
         if($user){
             $Wxloginmodel =  new WxLoginForm();
             $Wxloginmodel->wx_open_id=$data['wx_open_id'];

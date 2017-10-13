@@ -131,6 +131,12 @@ class SiteController extends Controller
         }
     }
 
+    public function actionTestInfo(){
+
+       $this->layout=false;
+
+        return $this->render('test_info');
+    }
     /**
      * Displays about page.
      *
