@@ -132,6 +132,7 @@ class EvalController extends \yii\rest\Controller
                 $result = $this->createusercode($res->data->userid);
                 if($result->success){
 
+                    $test_user = UserTest::findOne(['user_id'=>$user->id]);
                     $test_user->test_code=$result->data->code;
                     $test_user->save(false);
 
