@@ -24,6 +24,8 @@ class EvalController extends \yii\rest\Controller
                 'tokenParam' => 'token',
                 'optional' => [
                     'create',
+                    'detail',
+                    'getpass',
                 ],
             ]
         ] );
@@ -75,9 +77,98 @@ class EvalController extends \yii\rest\Controller
         //return $this->redirect(['admin/index','id'=>$id])->send();
     }
 
-    public function actionCreate(){
+    public function getpass($code){
 
-        echo "2434554s";
+        $app_name="ZLLBYS889J";
+        $app_key='NFUurmGyEo3m3LaspgbJ8U06e4BivBLxV9yKOPNjlfGWpMsnhljBNSTD8WyrlWvK';
+        $time_stamp = time();
+        $nonce = mt_rand();
+        $sign = $this->calculate_sign($app_key, $time_stamp, $nonce);
+
+      //  $code="QT53ZJFB8E";
+
+        //获取报告pass值
+        $url = "http://t12.renaren.com/api/code/getPass?app_name=".$app_name."&code=".$code."&time_stamp=".$time_stamp."&nonce=".$nonce."&sign=".$sign."&reset=0&time=0&ip=";
+
+        //http://t12.renaren.com/api/code/getPass?app_name=***&code=***&nonce=***&time_stamp=***&sign=***&reset=***&time=***&ip=***
+
+
+       // $url = "http://t12.renaren.com/api/code/find?app_name=".$app_name."&code=".$code."&time_stamp=".$time_stamp."&nonce=".$nonce."&sign=".$sign;
+
+        $res = $this->curl($url);
+
+        $res = json_decode($res);
+
+        if($res->success){
+            return $res->data->pass;
+        }else{
+            $url='http://dzapi.bibicars.com/v1/wechat/wx-oauth';
+            return $this->redirect($url)->send();
+
+        }
+
+    }
+
+    public function getinfo($code,$pass){
+
+        $app_name="ZLLBYS889J";
+        $app_key='NFUurmGyEo3m3LaspgbJ8U06e4BivBLxV9yKOPNjlfGWpMsnhljBNSTD8WyrlWvK';
+        $time_stamp = time();
+        $nonce = mt_rand();
+        $sign = $this->calculate_sign($app_key, $time_stamp, $nonce);
+
+//        $code="QT53ZJFB8E";
+//        $pass="tvjCFRRc8inSObd";
+
+        //获取报告pass值
+        //  $url = "http://t12.renaren.com/api/code/getPass?app_name=".$app_name."&code=".$code."&time_stamp=".$time_stamp."&nonce=".$nonce."&sign=".$sign."&reset=0&time=0&ip=";
+
+        // http://t12.renaren.com/test/report?app_name=***&code=***&time_stamp=***&nonce=***&pass=***&sign=***&type=t12-detail
+
+        $url = "http://t12.renaren.com/test/report?app_name=".$app_name."&code=".$code."&time_stamp=".$time_stamp."&nonce=".$nonce."&pass=".$pass."&sign=".$sign."&type=t12-detail";
+
+        return $this->redirect($url)->send();
+
+    }
+
+    public function actionDetail(){
+
+        $users =Yii::$app->wechat->oauth->user();
+        $openId=$users->getId();
+        $data['wx_open_id']=$users->getId();
+        $data['username']=$users->getNickname();
+        $data['avatar']=$users->getAvatar();
+
+        $user=User::findOneByWxopenid($data['wx_open_id']);
+
+        if(!$user){
+            $url='http://dzapi.bibicars.com/v1/wechat/wx-oauth';
+            return $this->redirect($url)->send();
+
+        }else{
+
+            $test_user = UserTest::findOne(['user_id'=>$user->id]);
+
+            if($test_user && $test_user->test_code){
+                      $test_code=$test_user->test_code;
+                      if($test_user->test_pass){
+                         $test_pass = $test_user->test_pass;
+                      }else{
+                         $test_pass = $this->getpass($test_user->test_code);
+                         $test_user->test_pass = $test_pass;
+                         $test_user->save(false);
+                      }
+                      $this->getinfo($test_code,$test_pass);
+            }else{
+
+                $url='http://dzapi.bibicars.com/v1/wechat/wx-oauth';
+
+                return $this->redirect($url)->send();
+            }
+
+        }
+
+
     }
 
     public function actionView($id){

@@ -26,18 +26,18 @@ return [
                 'application/json' => 'yii\web\JsonParser',
             ]
         ],
-//        'response' => [
-//            'class' => 'yii\web\Response',
-//            'on beforeSend' => function ($event) {
-//                $response = $event->sender;
-//                $response->data = [
-//                    'code' => $response->getStatusCode(),
-//                    'data' => $response->data,
-//                    'message' => $response->statusText
-//                ];
-//                $response->format = yii\web\Response::FORMAT_JSON;
-//            },
-//        ],
+        'response' => [
+            'class' => 'yii\web\Response',
+            'on beforeSend' => function ($event) {
+                $response = $event->sender;
+                $response->data = [
+                    'code' => $response->getStatusCode(),
+                    'data' => $response->data,
+                    'message' => $response->statusText
+                ];
+                $response->format = yii\web\Response::FORMAT_JSON;
+            },
+        ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
@@ -72,6 +72,8 @@ return [
                     'pluralize' => false,
                     'extraPatterns' => [
                         'GET create' => 'create',
+                        'GET detail' => 'detail',
+                        'GET getpass' => 'getpass',
                     ]
 
                 ],

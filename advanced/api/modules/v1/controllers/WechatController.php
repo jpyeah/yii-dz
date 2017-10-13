@@ -36,6 +36,15 @@ class WechatController extends Controller
         return $response->send();
     }
 
+    public function actionWxOauthDetail(){
+
+        $wechat=Yii::$app->wechat;
+        $wechat->config->set('oauth.callback','/v1/eval/detail');
+        $response=$wechat->oauth->redirect();
+        return $response->send();
+
+    }
+
     public function actionWxOauthCallback(){
         $users =Yii::$app->wechat->oauth->user();
         $openId=$users->getId();
