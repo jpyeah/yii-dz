@@ -57,7 +57,7 @@ class WechatController extends Controller
             if ($user = $Wxloginmodel->login()) {
                 if ($user instanceof IdentityInterface) {
 
-                    return $this->redirect('http://dzapi.bibicar.com/v1/eval?token='.$user->access_token)->send();
+                    return $this->redirect('http://dzapi.bibicars.com/v1/eval?token='.$user->access_token)->send();
 
                     //  return $user->access_token;
                 } else {
@@ -81,7 +81,7 @@ class WechatController extends Controller
                 $Wxloginmodel->wx_open_id=$user->wx_open_id;
                 if ($user = $Wxloginmodel->login()) {
                     if ($user instanceof IdentityInterface) {
-                        return $this->redirect('http://dzapi.bibicar.com/v1/eval?token='.$user->access_token)->send();
+                        return $this->redirect('http://dzapi.bibicars.com/v1/eval?token='.$user->access_token)->send();
 
                         // return $user->access_token;
                     } else {
